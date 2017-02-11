@@ -6,6 +6,11 @@ export class Server {
 
     constructor() {
         this.app = express();
+        this.setRoutes();
+     }
+
+     bootstrap() {
+         return new Server();
      }
 
      public setRoutes() {
