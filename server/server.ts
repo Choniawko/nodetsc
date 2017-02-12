@@ -8,7 +8,6 @@ export class Server {
     private app: express.Express;
     private server: express.Express;
     private io: SocketIO.Server;
-    public messages: string[];
 
     constructor() {
         this.app = express();
@@ -18,7 +17,6 @@ export class Server {
         this.io = socketIO(this.server);
         this.setRoutes();
         this.setStaticRoutes();
-        this.messages = [];
      }
 
      public bootstrap(): Server {
@@ -52,8 +50,6 @@ export class Server {
      private listenSocket(): void {
         this.io.on("connection", (socket) => {
             socket.on("message", (msg: string) => {
-                this.messages.push(msg);
-                socket.emit("messages", this.messages);
                 this.io.emit("message", msg);
             });
         });
