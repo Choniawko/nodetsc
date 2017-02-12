@@ -35,7 +35,7 @@ export class Server {
         this.app.use("/node_modules", express.static(
             path.join(__dirname, "../../node_modules")
         ));
-        this.app.set("views", path.join(__dirname, "/client"));
+        this.app.set("views", path.join(__dirname, "../client"));
         this.app.use(express.static(path.join(__dirname, "../client")));
         this.app.engine(".html", require("ejs").__express);
         this.app.set("view engine", "html");
