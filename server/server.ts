@@ -1,6 +1,7 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as socketIO from "socket.io";
+import * as IndexRoute from "./routes/index";
 
 export class Server {
     private app: express.Express;
@@ -9,6 +10,8 @@ export class Server {
 
     constructor() {
         this.app = express();
+        this.app.use(bodyParser.json());
+        this.app.use(bodyParser.urlencoded({extended: true}));
         this.server = require("http").Server(this.app);
         this.io = socketIO(this.server);
         this.setRoutes();
@@ -19,9 +22,9 @@ export class Server {
      }
 
      public setRoutes(): void {
-         this.app.get("/", (req: express.Request, res: express.Response) => {
-            res.send("Server run!");
-         });
+         const router: express.Router = express.Router();
+         router.use(IndexRoute.Index.routes());
+         this.app.use(router);
      }
 
      public startServer(): void {
