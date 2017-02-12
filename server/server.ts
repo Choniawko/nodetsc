@@ -1,4 +1,5 @@
 import * as express from "express";
+import * as path from "path";
 import * as bodyParser from "body-parser";
 import * as socketIO from "socket.io";
 import * as IndexRoute from "./routes/index";
@@ -7,6 +8,7 @@ export class Server {
     private app: express.Express;
     private server: express.Express;
     private io: SocketIO.Server;
+    public messages: string[];
 
     constructor() {
         this.app = express();
@@ -15,6 +17,8 @@ export class Server {
         this.server = require("http").Server(this.app);
         this.io = socketIO(this.server);
         this.setRoutes();
+        this.setStaticRoutes();
+        this.messages = [];
      }
 
      public bootstrap(): Server {
@@ -27,6 +31,17 @@ export class Server {
          this.app.use(router);
      }
 
+     private setStaticRoutes() {
+        this.app.use("/node_modules", express.static(
+            path.join(__dirname, "../../node_modules")
+        ));
+        this.app.set("views", path.join(__dirname, "/client"));
+        this.app.use(express.static(path.join(__dirname, "../client")));
+        this.app.engine(".html", require("ejs").__express);
+        this.app.set("view engine", "html");
+
+    }
+
      public startServer(): void {
          this.server.listen(3001, () => {
              console.log("Aplication listening on 3001");
@@ -37,7 +52,9 @@ export class Server {
      private listenSocket(): void {
         this.io.on("connection", (socket) => {
             socket.on("message", (msg: string) => {
-                socket.emit("message", msg);
+                this.messages.push(msg);
+                socket.emit("messages", this.messages);
+                this.io.emit("message", msg);
             });
         });
      }

@@ -10,6 +10,6 @@ export class Index {
     }
 
     public index(req: express.Request, res: express.Response) {
-        res.send("serwer działa.");
+        res.render("index");
     }
 }
